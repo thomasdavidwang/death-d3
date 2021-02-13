@@ -40,13 +40,15 @@ const drawChart = (data, bin) => {
 
     //Scaler for the Y axis, bounds defined later
 	var yScale = d3.scaleLinear()
-		.range([height,0]);
+		.range([height,0])
+		.nice();
 
 	//Scaler for the X axis, based off of min + max dates
 	var dateExtent = d3.extent(data, (data) => data.date);
 	var xScale = d3.scaleTime()
 		.domain(dateExtent)
-		.range([0,width]); 
+		.range([0,width])
+		.nice(); 
 
 	//Empty divs to be populated in update()
     var yAxis = svg.append("g");
@@ -140,15 +142,19 @@ const drawChart = (data, bin) => {
         	d3.select(event.currentTarget)
 			.style("fill", "#009FFA");
         })
-		.merge(allBars) 
-		.transition()
-		.duration(1000)
-		.attr("x", d => xScale(d.x0))
-		.attr("y", d => yScale(d.length))
-        .attr("width", d => width/histData.length )
-        .attr("height", d => height - yScale(d.length))
+		.merge(allBars)
+		.attr("x", (d) => xScale(d.x0))
+		.attr("y", yScale(average(histData)))
+        .attr("width", (d) => xScale(d.x1) - xScale(d.x0))
         .attr("stroke", "rgb(0,0,0)")
         .style("fill", "#009FFA");
+
+    allBars.enter()
+    	.selectAll("rect")
+    	.transition()
+    	.duration(1000)
+		.attr("y", d => yScale(d.length))
+        .attr("height", d => height - yScale(d.length));
     
     //Removes excess bars
     allBars.exit().remove();

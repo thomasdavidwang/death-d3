@@ -97,13 +97,15 @@
 
       //Scaler for the Y axis, bounds defined later
   	var yScale = d3__default['default'].scaleLinear()
-  		.range([height,0]);
+  		.range([height,0])
+  		.nice();
 
   	//Scaler for the X axis, based off of min + max dates
   	var dateExtent = d3__default['default'].extent(data, function (data) { return data.date; });
   	var xScale = d3__default['default'].scaleTime()
   		.domain(dateExtent)
-  		.range([0,width]); 
+  		.range([0,width])
+  		.nice(); 
 
   	//Empty divs to be populated in update()
       var yAxis = svg.append("g");
@@ -197,15 +199,19 @@
           	d3__default['default'].select(event.currentTarget)
   			.style("fill", "#009FFA");
           })
-  		.merge(allBars) 
-  		.transition()
-  		.duration(1000)
+  		.merge(allBars)
   		.attr("x", function (d) { return xScale(d.x0); })
-  		.attr("y", function (d) { return yScale(d.length); })
-          .attr("width", function (d) { return width/histData.length; } )
-          .attr("height", function (d) { return height - yScale(d.length); })
+  		.attr("y", yScale(average(histData)))
+          .attr("width", function (d) { return xScale(d.x1) - xScale(d.x0); })
           .attr("stroke", "rgb(0,0,0)")
           .style("fill", "#009FFA");
+
+      allBars.enter()
+      	.selectAll("rect")
+      	.transition()
+      	.duration(1000)
+  		.attr("y", function (d) { return yScale(d.length); })
+          .attr("height", function (d) { return height - yScale(d.length); });
       
       //Removes excess bars
       allBars.exit().remove();
