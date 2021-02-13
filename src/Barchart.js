@@ -140,15 +140,19 @@ const drawChart = (data, bin) => {
         	d3.select(event.currentTarget)
 			.style("fill", "#009FFA");
         })
-		.merge(allBars) 
-		.transition()
-		.duration(1000)
-		.attr("x", d => xScale(d.x0))
-		.attr("y", d => yScale(d.length))
-        .attr("width", d => width/histData.length )
-        .attr("height", d => height - yScale(d.length))
+		.merge(allBars)
+		.attr("x", (d) => xScale(d.x0))
+		.attr("y", yScale(average(histData)))
+        .attr("width", (d) => xScale(d.x1) - xScale(d.x0))
         .attr("stroke", "rgb(0,0,0)")
         .style("fill", "#009FFA");
+
+    allBars.enter()
+    	.selectAll("rect")
+    	.transition()
+    	.duration(1000)
+		.attr("y", d => yScale(d.length))
+        .attr("height", d => height - yScale(d.length));
     
     //Removes excess bars
     allBars.exit().remove();

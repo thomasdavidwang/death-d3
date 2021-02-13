@@ -197,15 +197,19 @@
           	d3__default['default'].select(event.currentTarget)
   			.style("fill", "#009FFA");
           })
-  		.merge(allBars) 
-  		.transition()
-  		.duration(1000)
+  		.merge(allBars)
   		.attr("x", function (d) { return xScale(d.x0); })
-  		.attr("y", function (d) { return yScale(d.length); })
-          .attr("width", function (d) { return width/histData.length; } )
-          .attr("height", function (d) { return height - yScale(d.length); })
+  		.attr("y", yScale(average(histData)))
+          .attr("width", function (d) { return xScale(d.x1) - xScale(d.x0); })
           .attr("stroke", "rgb(0,0,0)")
           .style("fill", "#009FFA");
+
+      allBars.enter()
+      	.selectAll("rect")
+      	.transition()
+      	.duration(1000)
+  		.attr("y", function (d) { return yScale(d.length); })
+          .attr("height", function (d) { return height - yScale(d.length); });
       
       //Removes excess bars
       allBars.exit().remove();
