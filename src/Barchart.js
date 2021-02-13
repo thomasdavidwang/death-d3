@@ -40,13 +40,15 @@ const drawChart = (data, bin) => {
 
     //Scaler for the Y axis, bounds defined later
 	var yScale = d3.scaleLinear()
-		.range([height,0]);
+		.range([height,0])
+		.nice();
 
 	//Scaler for the X axis, based off of min + max dates
 	var dateExtent = d3.extent(data, (data) => data.date);
 	var xScale = d3.scaleTime()
 		.domain(dateExtent)
-		.range([0,width]); 
+		.range([0,width])
+		.nice(); 
 
 	//Empty divs to be populated in update()
     var yAxis = svg.append("g");

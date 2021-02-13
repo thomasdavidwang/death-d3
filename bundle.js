@@ -97,13 +97,15 @@
 
       //Scaler for the Y axis, bounds defined later
   	var yScale = d3__default['default'].scaleLinear()
-  		.range([height,0]);
+  		.range([height,0])
+  		.nice();
 
   	//Scaler for the X axis, based off of min + max dates
   	var dateExtent = d3__default['default'].extent(data, function (data) { return data.date; });
   	var xScale = d3__default['default'].scaleTime()
   		.domain(dateExtent)
-  		.range([0,width]); 
+  		.range([0,width])
+  		.nice(); 
 
   	//Empty divs to be populated in update()
       var yAxis = svg.append("g");
