@@ -5,7 +5,7 @@ import { useData } from "./useData";
 import { Chart } from "./Chart";
 
 const App = () => {
-  const data = useData();
+  const data = useData('./src/data/merged2019.csv');
 
   if (!data) {
     return <pre>Loading...</pre>;

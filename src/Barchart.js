@@ -4,6 +4,7 @@ import {parseDate, formatDate, formatDay} from "./useData";
 
 const height = window.outerHeight/2, width = window.outerWidth/2;
 const margin = {top: 10, right: 30, bottom: 30, left: 40};
+const bar_margin_percent = 0.9;
 
 //Capitalizes first letter, lowercases all of the rest
 function textFormat(string) {
@@ -143,9 +144,9 @@ const drawChart = (data, bin) => {
 			.style("fill", "#009FFA");
         })
 		.merge(allBars)
-		.attr("x", (d) => xScale(d.x0))
+		.attr("x", (d) => (xScale(d.x0) * (1+bar_margin_percent) /2 + xScale(d.x1)*((1 - bar_margin_percent)/2)))
 		.attr("y", yScale(average(histData)))
-        .attr("width", (d) => xScale(d.x1) - xScale(d.x0))
+        .attr("width", (d) => (xScale(d.x1) - xScale(d.x0))*bar_margin_percent)
         .attr("stroke", "rgb(0,0,0)")
         .style("fill", "#009FFA");
 
