@@ -7,13 +7,13 @@
   var ReactDOM__default = /*#__PURE__*/_interopDefaultLegacy(ReactDOM);
   var d3__default = /*#__PURE__*/_interopDefaultLegacy(d3$1);
 
-  var dataURL = './src/data/deaths2020.csv';
+  // const dataURL = './src/data/deaths2020.csv';
 
-  var parseDate = d3.timeParse("%m/%d/%Y %I:%M %p");
+  var parseDate = d3.timeParse("%m/%d/%Y");
   var formatDate = d3.timeFormat("%b");
   var formatDay = d3.timeFormat("%b %d");
 
-  var useData = function () {
+  var useData = function (dataURL) {
     var ref = React$1.useState(null);
     var data = ref[0];
     var setData = ref[1];
@@ -61,6 +61,7 @@
 
   var height = window.outerHeight/2, width = window.outerWidth/2;
   var margin = {top: 10, right: 30, bottom: 30, left: 40};
+  var bar_margin_percent = 0.9;
 
   //Capitalizes first letter, lowercases all of the rest
   function textFormat(string) {
@@ -200,9 +201,9 @@
   			.style("fill", "#009FFA");
           })
   		.merge(allBars)
-  		.attr("x", function (d) { return xScale(d.x0); })
+  		.attr("x", function (d) { return (xScale(d.x0) * (1+bar_margin_percent) /2 + xScale(d.x1)*((1 - bar_margin_percent)/2)); })
   		.attr("y", yScale(average(histData)))
-          .attr("width", function (d) { return xScale(d.x1) - xScale(d.x0); })
+          .attr("width", function (d) { return (xScale(d.x1) - xScale(d.x0))*bar_margin_percent; })
           .attr("stroke", "rgb(0,0,0)")
           .style("fill", "#009FFA");
 
@@ -268,7 +269,7 @@
   };
 
   var App = function () {
-    var data = useData();
+    var data = useData('./src/data/merged2019.csv');
 
     if (!data) {
       return React__default['default'].createElement( 'pre', null, "Loading..." );
