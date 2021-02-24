@@ -4,7 +4,7 @@ import {parseDate, formatDate, formatDay} from "./useData";
 
 const height = window.outerHeight/2, width = window.outerWidth/2;
 const margin = {top: 10, right: 30, bottom: 30, left: 40};
-const bar_margin_percent = 0.9;
+const bar_margin_percent = 0.8;
 
 //Capitalizes first letter, lowercases all of the rest
 function textFormat(string) {
