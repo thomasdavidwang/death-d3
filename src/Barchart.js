@@ -43,7 +43,9 @@ function myErr(d) {
   for (var i = 0; i < d.length; i++) {
     sum += (d[i].length - myAvg) ** 2;
   }
-  return (sum / (d.length - 1)) ** 0.5;
+  var sd = (sum / (d.length - 1)) ** 0.5;
+  var se = sd / (d.length - 1) ** 0.5;
+  return se;
 }
 
 const drawChart = (data, bin) => {
@@ -202,6 +204,9 @@ const drawChart = (data, bin) => {
   p2seLine.selectAll("line").remove();
   m2seLine.selectAll("line").remove();
   //Draws new mean line
+  //  console.log(average(histData));
+  //  console.log(myErr(histData));
+
   meanLine
     .append("line")
     .style("stroke", "black")

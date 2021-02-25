@@ -87,7 +87,9 @@
     for (var i = 0; i < d.length; i++) {
       sum += Math.pow( (d[i].length - myAvg), 2 );
     }
-    return Math.pow( (sum / (d.length - 1)), 0.5 );
+    var sd = Math.pow( (sum / (d.length - 1)), 0.5 );
+    var se = sd / Math.pow( (d.length - 1), 0.5 );
+    return se;
   }
 
   var drawChart = function (data, bin) {
@@ -245,6 +247,9 @@
     p2seLine.selectAll("line").remove();
     m2seLine.selectAll("line").remove();
     //Draws new mean line
+    console.log(average(histData));
+    console.log(myErr(histData));
+
     meanLine
       .append("line")
       .style("stroke", "black")
