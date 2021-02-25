@@ -80,18 +80,28 @@
     return sum / d.length;
   }
 
+  function myErr(d) {
+    var sum = 0;
+    var myAvg = average(d);
+
+    for (var i = 0; i < d.length; i++) {
+      sum += Math.pow( (d[i].length - myAvg), 2 );
+    }
+    return Math.pow( (sum / (d.length - 1)), 0.5 );
+  }
+
   var drawChart = function (data, bin) {
     //Appends SVG to page
-    var svg = d3$1.select('div#chart')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    var svg = d3$1.select("div#chart")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     //Parses CSV file dates
     data.forEach(function (d) {
-      d.date = parseDate(d['DateOfDeath']);
+      d.date = parseDate(d["DateOfDeath"]);
     });
 
     //Scaler for the Y axis, bounds defined later
@@ -102,45 +112,49 @@
     var xScale = d3$1.scaleTime().domain(dateExtent).range([0, width]).nice();
 
     //Empty divs to be populated in update()
-    var yAxis = svg.append('g');
-    var xAxis = svg.append('g');
+    var yAxis = svg.append("g");
+    var xAxis = svg.append("g");
 
     //Label for the X Axis
     svg
-      .append('text')
+      .append("text")
       .attr(
-        'transform',
-        'translate(' + width / 2 + ' ,' + (height + margin.top + 20) + ')'
+        "transform",
+        "translate(" + width / 2 + " ," + (height + margin.top + 20) + ")"
       )
-      .style('text-anchor', 'middle')
-      .text('Date');
+      .style("text-anchor", "middle")
+      .text("Date");
 
     //Lable for the Y Axis
     svg
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 0 - margin.left)
-      .attr('x', 0 - height / 2)
-      .attr('dy', '1em')
-      .style('text-anchor', 'middle')
-      .text('Total Number of Deaths');
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - height / 2)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Total Number of Deaths");
 
     //Grouping div for bars
-    var bars = svg.append('g');
+    var bars = svg.append("g");
 
     //Div for mean line
-    var meanLine = svg.append('g').attr('id', 'meanLine');
+    var meanLine = svg.append("g").attr("id", "meanLine");
+    //Div for 2se increase
+    var p2seLine = svg.append("g").attr("id", "p2seLine");
+    //Div for 2se decrease
+    var m2seLine = svg.append("g").attr("id", "m2seLine");
 
     //TickManner: Interval for histogram binning
     var tickManner;
     switch (bin.toLowerCase()) {
-      case 'month':
+      case "month":
         tickManner = d3$1.timeMonth;
         break;
-      case 'week':
+      case "week":
         tickManner = d3$1.timeWeek;
         break;
-      case 'day':
+      case "day":
         tickManner = d3$1.timeDay;
         break;
     }
@@ -163,80 +177,101 @@
 
     //Propogates X Axis
     xAxis
-      .attr('transform', ("translate(0, " + height + " )"))
+      .attr("transform", ("translate(0, " + height + " )"))
       .call(d3$1.axisBottom(xScale).tickFormat(formatDate));
 
     //Selects existing bars
-    var allBars = bars.selectAll('rect').data(histData);
+    var allBars = bars.selectAll("rect").data(histData);
 
     //Transitions + adds additional bars
     allBars
       .enter()
-      .append('rect')
+      .append("rect")
       //Mouseover function for text box and color shift.
-      .on('mouseover', function (d, i) {
+      .on("mouseover", function (d, i) {
         //Manipulates Text Box
         var allData =
-          'Total Deaths from ' +
+          "Total Deaths from " +
           formatDay(d.x0) +
-          ' to ' +
+          " to " +
           formatDay(d.x1) +
-          ': ' +
+          ": " +
           d.length +
-          '<br/>' +
-          '<br/>';
+          "<br/>" +
+          "<br/>";
         for (var i = 0; i < d.length; i++) {
           allData +=
             textFormat(d[i].DeceasedFirstName) +
-            ' ' +
+            " " +
             textFormat(d[i].DeceasedLastName) +
-            ' ' +
+            " " +
             d[i].DateOfDeath +
-            '<br/>';
+            "<br/>";
         }
-        d3$1.select('div.textbox').style('opacity', 0.9).html(allData);
+        d3$1.select("div.textbox").style("opacity", 0.9).html(allData);
 
         //Changes Color
-        d3$1.select(event.currentTarget).style('fill', '#005EFB');
+        d3$1.select(event.currentTarget).style("fill", "#005EFB");
       })
 
       //Resets bars on mouse out
-      .on('mouseout', function () {
-        d3$1.select(event.currentTarget).style('fill', '#009FFA');
+      .on("mouseout", function () {
+        d3$1.select(event.currentTarget).style("fill", "#009FFA");
       })
       .merge(allBars)
       .attr(
-        'x',
+        "x",
         function (d) { return (xScale(d.x0) * (1 + bar_margin_percent)) / 2 +
           xScale(d.x1) * ((1 - bar_margin_percent) / 2); }
       )
-      .attr('y', yScale(average(histData)))
-      .attr('width', function (d) { return (xScale(d.x1) - xScale(d.x0)) * bar_margin_percent; })
-      .attr('stroke', 'rgb(0,0,0)')
-      .style('fill', '#009FFA');
+      .attr("y", yScale(average(histData)))
+      .attr("width", function (d) { return (xScale(d.x1) - xScale(d.x0)) * bar_margin_percent; })
+      .attr("stroke", "rgb(0,0,0)")
+      .style("fill", "#009FFA");
 
     allBars
       .enter()
-      .selectAll('rect')
+      .selectAll("rect")
       .transition()
       .duration(1000)
-      .attr('y', function (d) { return yScale(d.length); })
-      .attr('height', function (d) { return height - yScale(d.length); });
+      .attr("y", function (d) { return yScale(d.length); })
+      .attr("height", function (d) { return height - yScale(d.length); });
 
     //Removes excess bars
     allBars.exit().remove();
 
     //Removes existing mean line
-    meanLine.selectAll('line').remove();
-
+    meanLine.selectAll("line").remove();
+    p2seLine.selectAll("line").remove();
+    m2seLine.selectAll("line").remove();
     //Draws new mean line
     meanLine
-      .append('line')
-      .style('stroke', 'black')
-      .attr('y1', yScale(average(histData)))
-      .attr('y2', yScale(average(histData)))
-      .attr('x1', 0)
-      .attr('x2', width);
+      .append("line")
+      .style("stroke", "black")
+      .attr("y1", yScale(average(histData)))
+      .attr("y2", yScale(average(histData)))
+      .attr("x1", 0)
+      .attr("x2", width);
+
+    p2seLine
+      .append("line")
+      .style("stroke", "red")
+      .style("stroke-width", 2)
+      .style("stroke-dasharray", 14)
+      .attr("y1", yScale(average(histData) + 2 * myErr(histData)))
+      .attr("y2", yScale(average(histData) + 2 * myErr(histData)))
+      .attr("x1", 0)
+      .attr("x2", width);
+
+    m2seLine
+      .append("line")
+      .style("stroke", "green")
+      .style("stroke-width", 2)
+      .style("stroke-dasharray", 14)
+      .attr("y1", yScale(average(histData) - 2 * myErr(histData)))
+      .attr("y2", yScale(average(histData) - 2 * myErr(histData)))
+      .attr("x1", 0)
+      .attr("x2", width);
   };
 
   var Barchart = function (ref) {
@@ -246,7 +281,7 @@
     React$1.useEffect(function () {
       drawChart(data, bin);
 
-      return function () { return d3$1.selectAll('svg').remove(); };
+      return function () { return d3$1.selectAll("svg").remove(); };
     }, [bin]);
 
     return React.createElement( React.Fragment, null );
